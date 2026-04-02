@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Moviemix - Recommendations</title>
+	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}?v=darktheme2">
+</head>
+
+<body id="content">
+	<div class="results">
+	    <center>
+	      <h2 id="name" class="text-uppercase">{{title}}</h2>
+	    </center>
+	</div>
+	<br>
+
+
+<div id="mycontent">
+    <div id="mcontent">
+      <div class="poster-lg">
+        <img class="poster" style="border-radius: 40px;margin-left: 90px;" height="400" width="300" src={{poster}}>
+      </div>
+      <div class="poster-sm text-center">
+        <img class="poster" style="border-radius: 40px;margin-bottom: 5%;" height="400" width="300" src={{poster}}>
+      </div>
+      <div id="details">
+        <br/>
+        <br>
+        <h6 id="overview" style="max-width: 85%">OVERVIEW: &nbsp;&nbsp;&nbsp;{{overview}}</h6>
+        <h6 id="vote_average">RATING: &nbsp;&nbsp;&nbsp;{{vote_average}}/10 ({{vote_count}} votes)</h6>
+        <h6 id="genres">GENRE: &nbsp;&nbsp;&nbsp;{{genres}}</h6>
+        <h6 id="date">RELEASE DATE: &nbsp;&nbsp;&nbsp;{{release_date}}</h6>
+        <h6 id="runtime">RUNTIME: &nbsp;&nbsp;&nbsp;{{runtime}}</h6>
+        <h6 id="status">STATUS: &nbsp;&nbsp;&nbsp;{{status}}</h6>
+      </div>
+    </div>
+</div>
+<br/>
+	
+{% for name, details in cast_details.items() if not cast_details.hidden %}
+  <div class="modal fade" id="{{details[0]}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: var(--bg-secondary); color: var(--text-main); border-bottom: 1px solid var(--border-color);">
+          <h5 class="modal-title" id="exampleModalLabel3">{{name}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true" style="color: var(--text-main)">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <img class="profile-pic" src="{{details[1]}}" alt="{{name}} - profile" style="width: 250px;height:400px;border-radius: 10px;" />
+          <div style="margin-left: 20px">
+            <p><strong>Birthday:</strong> {{details[2]}} </p>
+            <p><strong>Place of Birth:</strong> {{details[3]}} </p>
+            <p> 
+              <p><strong>Biography:</strong><p>
+              {{details[4]}}
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: space-between;">
+          <button type="button" class="btn btn-danger" onclick="window.loadActorView({{details[0]}}, '{{name}}')">Show More Movies of {{name}}</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  {% if casts|length > 1 %}
+  <div class="movie" style="color: var(--text-main); margin-top: 30px; margin-bottom: 20px;">
+    	<center>
+		<h3>TOP CAST</h3>
+		<h5>(Click on the cast to know more)</h5>
+	</center>
+  </div>
+
+  <div class="movie-content">
+        {% for name, details in casts.items() if not casts.hidden %}
+          <div class="castcard card" style="width: 15rem;" title="Click to know more about {{name}}" data-toggle="modal" data-target="#{{details[0]}}">
+            <div class="imghvr">
+              <img class="card-img-top cast-img" id="{{details[0]}}" height="360" width="240" alt="{{name}} - profile" src="{{details[2]}}">
+              <figcaption class="fig">
+                <button class="card-btn btn"> Know More </button>
+              </figcaption>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{name|title}}</h5>
+              <h5 class="card-title"><span style="color:var(--text-muted);font-size: 20px;">Character: {{details[1]|title}}</span></h5>
+            </div>
+          </div>
+      {% endfor %}
+    </div>
+{% endif %}
+
+      <!-- Loader shown while recommendations are being fetched in background -->
+      <div id="rec-loader-section" style="text-align:center; padding: 40px 0;">
+        <div style="display:inline-block;">
+          <div style="width:3rem; height:3rem; border: 4px solid var(--border-color); border-top: 4px solid var(--accent-color); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+          <p style="color: #aaa; margin-top: 15px; font-size: 1rem;">
+            <i class="fa fa-film" style="color:var(--accent-color); margin-right: 6px;"></i>
+            Gathering the best picks for you...
+          </p>
+        </div>
+      </div>
+
+      <!-- JS injects recommendation cards here -->
+      <div id="rec-inject-section" style="display:none;"></div>
+
+      <!-- Embedded rec_titles for JS to read -->
+      <script>var _rec_titles = {{ rec_titles_json | safe }};</script>
+
+  <center>
+    {% if reviews|length > 0 %}
+    <h2 style="color:var(--text-main); margin-top: 30px; margin-bottom: 20px;">USER REVIEWS</h2>
+    <div id="reviews-container" style="max-width: 85%; margin: 0 auto; margin-bottom: 40px; text-align: left;">
+      {% for review, status in reviews.items() if not reviews.hidden %}
+      <div class="card review-card {% if loop.index0 >= 3 %}d-none extra-review{% endif %}" style="background-color: var(--bg-secondary); margin-bottom: 15px; border-radius: 16px; box-shadow: var(--card-shadow);">
+        <div class="card-body">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="color: #888; margin: 0; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;">
+              <i class="fa fa-user-circle" style="font-size: 1.1rem;"></i> <span>Anonymous User</span>
+            </div>
+            <div style="font-size: 0.8rem; font-weight: 600; padding: 4px 10px; border-radius: 12px; display: flex; align-items: center; gap: 5px; {% if status == 'Good' %}color: #2ecc71; background: rgba(46, 204, 113, 0.1); border: 1px solid rgba(46, 204, 113, 0.3);{% else %}color: #fc4a55; background: rgba(252, 74, 85, 0.1); border: 1px solid rgba(252, 74, 85, 0.3);{% endif %}">
+              {% if status == 'Good' %}<i class="fa fa-thumbs-up"></i> Positive{% else %}<i class="fa fa-thumbs-down"></i> Negative{% endif %}
+            </div>
+          </div>
+          <p class="review-text" style="color: var(--text-muted); margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+            {{review}}
+          </p>
+          <button class="btn btn-sm read-more-btn" style="border: 1px solid var(--border-color); color: var(--text-main);" onclick="
+            var p = this.previousElementSibling; 
+            if(p.style.webkitLineClamp == '3' || !p.style.webkitLineClamp) { 
+              p.style.webkitLineClamp = 'unset'; 
+              this.innerText = 'Read Less'; 
+            } else { 
+              p.style.webkitLineClamp = '3'; 
+              this.innerText = 'Read More'; 
+            }
+          ">Read More</button>
+        </div>
+      </div>
+      {% endfor %}
+      
+      {% if reviews|length > 3 %}
+      <div style="text-align: center; margin-top: 25px;">
+        <button id="view-more-reviews-btn" data-expanded="false" class="btn" style="color: var(--text-main); text-decoration: none; font-size: 1rem; align-items: center; justify-content: center; gap: 8px; font-weight: 600; background: var(--bg-secondary); padding: 10px 24px; border-radius: 25px; border: 1px solid var(--border-color); transition: all 0.3s ease; display: inline-flex; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05);" onmouseover="this.style.background='var(--accent-color)'; this.style.color='white'; this.style.border='1px solid var(--accent-color)'; this.style.boxShadow='var(--card-shadow)';" onmouseout="this.style.background='var(--bg-secondary)'; this.style.color='var(--text-main)'; this.style.border='1px solid var(--border-color)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.05)';" onclick="
+          var expanded = this.getAttribute('data-expanded') === 'true';
+          if (expanded) {
+            document.querySelectorAll('.extra-review').forEach(function(el) { el.classList.add('d-none'); });
+            this.innerHTML = 'View More Reviews <i class=\'fa fa-angle-down\' style=\'margin-left: 5px; font-size: 1.1rem;\'></i>';
+            this.setAttribute('data-expanded', 'false');
+          } else {
+            document.querySelectorAll('.extra-review').forEach(function(el) { el.classList.remove('d-none'); });
+            this.innerHTML = 'View Less Reviews <i class=\'fa fa-angle-up\' style=\'margin-left: 5px; font-size: 1.1rem;\'></i>';
+            this.setAttribute('data-expanded', 'true');
+            setTimeout(checkReviewLengths, 50);
+          }
+        ">View More Reviews <i class="fa fa-angle-down" style="margin-left: 5px; font-size: 1.1rem;"></i></button>
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+    <div>
+    </div>
+    {% endif %}
+  </center>
+
+    
+    </div>
+  </div>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='recommend.js')}}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <script>
+    function checkReviewLengths() {
+      document.querySelectorAll('.review-card').forEach(function(card) {
+        if(card.classList.contains('d-none')) return;
+        var p = card.querySelector('.review-text');
+        var btn = card.querySelector('.read-more-btn');
+        if (!p || !btn) return;
+        
+        if (p.scrollHeight <= p.clientHeight) {
+          btn.style.display = 'none';
+        } else if (btn.innerText === 'Read More') {
+          btn.style.display = 'inline-block';
+        }
+      });
+    }
+    setTimeout(checkReviewLengths, 100);
+    window.addEventListener('resize', checkReviewLengths);
+  </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Top {{genre_name}} Movies - Moviemix</title>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}?v=darktheme2">
+  <script type="text/javascript">
+    var films = {{suggestions|tojson}};
+    var genreId = '{{genre_id}}';
+    var genreName = '{{genre_name}}';
+    
+    function goToHomeAndRecommend(e) {
+      // Show loader on top of the current genre grid before navigating
+      document.getElementById('loader').style.display = 'flex';
+      window.localStorage.setItem('pending_movie_recommendation', e.getAttribute('title'));
+      var id = e.getAttribute('data-id');
+      if (id) {
+          window.localStorage.setItem('pending_movie_id', id);
+      }
+      setTimeout(function() { window.location.href = '/'; }, 200);
+    }
+  </script>
+</head>
+
+<body id="content">
+  <div id="loader"></div>
+  <a href="/" id="home-btn" style="position: fixed; top: 25px; left: 35px; color: var(--text-main); text-decoration: none; font-size: 1rem; display: flex; align-items: center; gap: 8px; font-weight: 600; background: var(--bg-secondary); padding: 8px 16px; border-radius: 25px; border: 1px solid var(--border-color); transition: all 0.3s ease; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.05);" onmouseover="this.style.background='var(--accent-color)'; this.style.color='white'; this.style.border='1px solid var(--accent-color)'; this.style.boxShadow='var(--card-shadow)';" onmouseout="this.style.background='var(--bg-secondary)'; this.style.color='var(--text-main)'; this.style.border='1px solid var(--border-color)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.05)';">
+    <i class="fa fa-home"></i> <span>Home</span>
+  </a>
+  <div class="ml-container" style="display: block;">
+    <div id="genre-page-content">
+      <div class="genres-container" style="position: sticky; top: 25px; z-index: 899; margin-bottom: 30px; text-align: center; pointer-events: none;">
+        <div style="display: inline-flex; justify-content: center; gap: 15px; flex-wrap: wrap; pointer-events: auto;">
+          <a href="/genre?id=28&name=Action%20%26%20Adventure" class="genre-btn btn" style="border-radius: 20px; transition: 0.3s; {% if genre_id == '28' %}background-color: var(--accent-color); color: white; border: 1px solid var(--accent-color); font-weight: bold; box-shadow: var(--card-shadow); pointer-events: none;{% else %}background-color: #ffffff; color: #000000; font-weight: bold; border: 1px solid var(--border-color);{% endif %}" {% if genre_id != '28' %}onmouseover="this.style.backgroundColor='var(--accent-color)'; this.style.color='white'; this.style.borderColor='var(--accent-color)';" onmouseout="this.style.backgroundColor='#ffffff'; this.style.color='#000000'; this.style.borderColor='var(--border-color)';"{% endif %}>Action / Adventure</a>
+          
+          <a href="/genre?id=35&name=Comedy" class="genre-btn btn" style="border-radius: 20px; transition: 0.3s; {% if genre_id == '35' %}background-color: var(--accent-color); color: white; border: 1px solid var(--accent-color); font-weight: bold; box-shadow: var(--card-shadow); pointer-events: none;{% else %}background-color: #ffffff; color: #000000; font-weight: bold; border: 1px solid var(--border-color);{% endif %}" {% if genre_id != '35' %}onmouseover="this.style.backgroundColor='var(--accent-color)'; this.style.color='white'; this.style.borderColor='var(--accent-color)';" onmouseout="this.style.backgroundColor='#ffffff'; this.style.color='#000000'; this.style.borderColor='var(--border-color)';"{% endif %}>Comedy</a>
+          
+          <a href="/genre?id=27&name=Horror" class="genre-btn btn" style="border-radius: 20px; transition: 0.3s; {% if genre_id == '27' %}background-color: var(--accent-color); color: white; border: 1px solid var(--accent-color); font-weight: bold; box-shadow: var(--card-shadow); pointer-events: none;{% else %}background-color: #ffffff; color: #000000; font-weight: bold; border: 1px solid var(--border-color);{% endif %}" {% if genre_id != '27' %}onmouseover="this.style.backgroundColor='var(--accent-color)'; this.style.color='white'; this.style.borderColor='var(--accent-color)';" onmouseout="this.style.backgroundColor='#ffffff'; this.style.color='#000000'; this.style.borderColor='var(--border-color)';"{% endif %}>Horror</a>
+          
+          <a href="/genre?id=878&name=Sci-Fi" class="genre-btn btn" style="border-radius: 20px; transition: 0.3s; {% if genre_id == '878' %}background-color: var(--accent-color); color: white; border: 1px solid var(--accent-color); font-weight: bold; box-shadow: var(--card-shadow); pointer-events: none;{% else %}background-color: #ffffff; color: #000000; font-weight: bold; border: 1px solid var(--border-color);{% endif %}" {% if genre_id != '878' %}onmouseover="this.style.backgroundColor='var(--accent-color)'; this.style.color='white'; this.style.borderColor='var(--accent-color)';" onmouseout="this.style.backgroundColor='#ffffff'; this.style.color='#000000'; this.style.borderColor='var(--border-color)';"{% endif %}>Sci-Fi</a>
+          
+          <a href="/genre?id=10749&name=Romance" class="genre-btn btn" style="border-radius: 20px; transition: 0.3s; {% if genre_id == '10749' %}background-color: var(--accent-color); color: white; border: 1px solid var(--accent-color); font-weight: bold; box-shadow: var(--card-shadow); pointer-events: none;{% else %}background-color: #ffffff; color: #000000; font-weight: bold; border: 1px solid var(--border-color);{% endif %}" {% if genre_id != '10749' %}onmouseover="this.style.backgroundColor='var(--accent-color)'; this.style.color='white'; this.style.borderColor='var(--accent-color)';" onmouseout="this.style.backgroundColor='#ffffff'; this.style.color='#000000'; this.style.borderColor='var(--border-color)';"{% endif %}>Romance</a>
+          
+          <a href="/genre?id=53&name=Thriller" class="genre-btn btn" style="border-radius: 20px; transition: 0.3s; {% if genre_id == '53' %}background-color: var(--accent-color); color: white; border: 1px solid var(--accent-color); font-weight: bold; box-shadow: var(--card-shadow); pointer-events: none;{% else %}background-color: #ffffff; color: #000000; font-weight: bold; border: 1px solid var(--border-color);{% endif %}" {% if genre_id != '53' %}onmouseover="this.style.backgroundColor='var(--accent-color)'; this.style.color='white'; this.style.borderColor='var(--accent-color)';" onmouseout="this.style.backgroundColor='#ffffff'; this.style.color='#000000'; this.style.borderColor='var(--border-color)';"{% endif %}>Thriller</a>
+        </div>
+      </div>
+      
+      <div id="genre-grid" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; padding: 40px; padding-bottom: 20px; margin: 0 auto;">
+         <!-- Movies will load here -->
+      </div>
+      
+      <!-- Pagination Load More Integration -->
+      <div style="text-align: center; margin-bottom: 60px;">
+        <button id="load-more-btn" class="btn" style="color: var(--text-main); background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 25px; padding: 10px 30px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);" onmouseover="this.style.background='var(--accent-color)'; this.style.color='white'; this.style.border='1px solid var(--accent-color)'; this.style.boxShadow='var(--card-shadow)';" onmouseout="this.style.background='var(--bg-secondary)'; this.style.color='var(--text-main)'; this.style.border='1px solid var(--border-color)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.05)';">
+          Load More <i class="fa fa-angle-down" style="padding-left: 5px;"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="fail">
+    <center><h3>Sorry! The Requested Movie is not in our Database</h3></center>
+  </div>
+  
+  <div class="results">
+    <center><h2 id="name" class="text-uppercase"></h2></center>
+  </div>
+
+  <input type="hidden" id="autoComplete">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='recommend.js')}}"></script>
+  
+  <script>
+    $(document).ready(function(){
+      var my_api_key = '5ce2ef2d7c461dea5b4e04900d1c561e';
+      
+      var lower_films = films.map(f => f.toLowerCase());
+      var currentPage = 1;
+      var targetLimit = 12;
+      var countLoaded = 0;
+      var isFetching = false;
+      var currentMovieIndex = 0;
+      var currentMoviesArray = [];
+
+      function processCachedMovies() {
+          var batchHtml = "";
+          while (currentMovieIndex < currentMoviesArray.length && countLoaded < targetLimit) {
+            var movie = currentMoviesArray[currentMovieIndex];
+            var title = movie.title || movie.original_title;
+            
+            if(lower_films.includes(title.toLowerCase()) && movie.poster_path){
+                var poster_url = "https://image.tmdb.org/t/p/original" + movie.poster_path;
+                batchHtml += `
+                <div class="card" style="width: 15rem; margin-bottom: 20px;" title="${title}" data-id="${movie.id}" onclick="goToHomeAndRecommend(this)">
+                    <div class="imghvr">
+                    <img class="card-img-top" height="360" width="240" alt="${title} - poster" src="${poster_url}">
+                    <figcaption class="fig">
+                        <button class="card-btn btn"> Click Me </button>
+                    </figcaption>
+                    </div>
+                    <div class="card-body">
+                    <h5 class="card-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0;">${title}</h5>
+                    </div>
+                </div>
+                `;
+                countLoaded++;
+            }
+            currentMovieIndex++;
+          }
+          
+          $('#genre-grid').append(batchHtml);
+          
+          if (countLoaded < targetLimit && currentPage < 50) {
+              currentPage++;
+              fetchNextApiPage();
+          } else {
+              isFetching = false;
+              $('#load-more-btn').html('Load More <i class="fa fa-angle-down" style="padding-left: 5px;"></i>');
+              if (currentPage >= 50) $('#load-more-btn').hide();
+          }
+      }
+
+      function fetchNextApiPage() {
+          var genre_url = 'https://api.tmdb.org/3/discover/movie?api_key=' + my_api_key + '&with_genres=' + genreId + '&sort_by=popularity.desc&page=' + currentPage;
+          $.ajax({
+            type: 'GET',
+            url: genre_url,
+            success: function(response){
+              currentMoviesArray = response.results;
+              currentMovieIndex = 0;
+              processCachedMovies();
+            },
+            error: function(){
+              if(countLoaded === 0 && currentPage === 1) $('#genre-grid').html('<p style="color: var(--text-muted); font-style: italic;">Could not load genre movies at the moment.</p>');
+              $('#load-more-btn').hide();
+              isFetching = false;
+            }
+          });
+      }
+      
+      function executeLoadCycle() {
+          if (isFetching) return;
+          isFetching = true;
+          $('#load-more-btn').html('<i class="fa fa-spinner fa-spin"></i> Loading...');
+          
+          if (currentMovieIndex < currentMoviesArray.length) {
+              processCachedMovies();
+          } else {
+              fetchNextApiPage();
+          }
+      }
+      
+      executeLoadCycle();
+
+      $('#load-more-btn').on('click', function() {
+        if (!isFetching) {
+          targetLimit += 12;
+          executeLoadCycle();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

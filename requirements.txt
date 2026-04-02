@@ -1,0 +1,15 @@
+# ── Web App ──────────────────────────────────────────────
+Flask
+gunicorn
+numpy
+scipy
+scikit-learn==1.4.0
+pandas
+requests
+
+# ── Jupyter Notebooks ────────────────────────
+jupyter
+nltk
+matplotlib
+seaborn
+wordcloud
