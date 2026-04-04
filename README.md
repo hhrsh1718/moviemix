@@ -1,4 +1,4 @@
-# 🍿 Moviemix
+# 🍿 CineBlend
 
 A movie recommendation web app built with Flask and Machine Learning.
 
@@ -6,7 +6,7 @@ A movie recommendation web app built with Flask and Machine Learning.
 
 ## What it does
 
-Search for a movie you like, and Moviemix will instantly suggest 10 similar movies. It also fetches real reviews and tells you if the audience liked it or not (sentiment analysis).
+Search for a movie you like, and CineBlend will instantly suggest 10 similar movies. It also fetches real reviews and tells you if the audience liked it or not (sentiment analysis).
 
 ---
 
